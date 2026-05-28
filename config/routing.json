@@ -1,0 +1,22 @@
+{
+  "intent_extraction": {
+    "primary": "groq",
+    "fallback": "gemini",
+    "model": "llama-3.3-70b-versatile"
+  },
+  "schema_generation": {
+    "primary": "groq",
+    "fallback": "gemini",
+    "model": "llama-3.3-70b-versatile"
+  },
+  "appspec_generation": {
+    "primary": "groq",
+    "fallback": "gemini",
+    "model": "llama-3.3-70b-versatile"
+  },
+  "repair": {
+    "primary": "groq",
+    "fallback": "gemini",
+    "model": "llama-3.3-70b-versatile"
+  }
+}

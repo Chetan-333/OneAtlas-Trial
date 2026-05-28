@@ -1,36 +1,55 @@
 import json
-from schemas.intent_schema import IntentSchema
+
 from utils.llm import generate_response
+from schemas.app_intent_schema import AppIntent
 
 
-def extract_intent(user_input: str):
+def clean_json_response(response: str):
+    return (
+        response.strip()
+        .replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
+
+
+def extract_intent(user_prompt: str) -> AppIntent:
 
     prompt = f"""
-You are an AI Intent Extraction System.
+You are an Intent Extraction Agent.
 
-Extract structured app requirements from the user's request.
+Convert the user prompt into a structured AppIntent.
 
-User Request:
-{user_input}
+User Prompt:
+{user_prompt}
 
-Return ONLY valid JSON in this format:
+Return ONLY valid JSON in exactly this format:
 
 {{
-    "app_name": "",
-    "app_type": "",
-    "features": [],
-    "roles": [],
-    "entities": [],
-    "monetization": ""
+  "appName": "string",
+  "appType": "crm | project_management | ecommerce | hr_tool | inventory | content_platform | analytics | custom",
+  "features": ["string"],
+  "entities": ["string"],
+  "integrations_requested": ["slack | gmail | stripe | whatsapp | webhook"],
+  "assumptions": ["string"],
+  "clarification_required": false,
+  "clarification_question": null
 }}
+
+Rules:
+- If prompt is vague, set clarification_required to true and ask one clear question.
+- If proceeding with assumptions, document them in assumptions.
+- Do not include explanations.
+- Do not include markdown.
 """
 
-    response = generate_response(prompt)
+    response = generate_response(
+        prompt,
+        stage_name="intent_extraction"
+    )
 
-    cleaned_response = response.strip().replace("```json", "").replace("```", "")
+    cleaned = clean_json_response(response)
 
-    parsed_json = json.loads(cleaned_response)
+    parsed = json.loads(cleaned)
 
-    validated_data = IntentSchema(**parsed_json)
-
-    return validated_data
+    return AppIntent(**parsed)
