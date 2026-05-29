@@ -8,9 +8,10 @@ from validators.appspec_validator import validate_appspec
 
 
 class PipelineEngine:
-    def __init__(self):
+    def __init__(self, event_callback=None):
         self.events = []
         self.repair_logs = []
+        self.event_callback = event_callback
 
     def log_event(self, stage, status, data=None):
         event = {
@@ -21,7 +22,13 @@ class PipelineEngine:
 
         self.events.append(event)
 
+        if self.event_callback:
+            self.event_callback(self.events)
+
     def run(self, prompt: str):
+
+        self.events = []
+        self.repair_logs = []
 
         # Stage 1: Intent Extraction
         self.log_event("intent_extraction", "running")
@@ -108,9 +115,9 @@ class PipelineEngine:
 
         return {
             "success": True,
-            "intent": intent,
-            "data_schema": data_schema,
-            "appspec": appspec,
+            "intent": intent.model_dump(),
+            "data_schema": data_schema.model_dump(),
+            "appspec": appspec.model_dump(),
             "events": self.events,
             "repair_logs": self.repair_logs
         }
