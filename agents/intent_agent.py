@@ -52,4 +52,35 @@ Rules:
 
     parsed = json.loads(cleaned)
 
+    parsed = normalize_intent(parsed)
     return AppIntent(**parsed)
+
+
+def normalize_intent(parsed):
+    if not parsed.get("appName"):
+        parsed["appName"] = "Untitled App"
+
+    if not parsed.get("appType"):
+        parsed["appType"] = "custom"
+
+    if not parsed.get("features"):
+        parsed["features"] = ["basic dashboard"]
+
+    if not parsed.get("entities"):
+        parsed["entities"] = ["User"]
+
+    if not parsed.get("integrations_requested"):
+        parsed["integrations_requested"] = []
+
+    if not parsed.get("assumptions"):
+        parsed["assumptions"] = [
+            "Prompt was vague, so a basic application structure was assumed."
+        ]
+
+    parsed.setdefault("clarification_required", True)
+    parsed.setdefault(
+        "clarification_question",
+        "What type of application do you want to build?"
+    )
+
+    return parsed

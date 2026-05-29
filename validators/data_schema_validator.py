@@ -29,6 +29,8 @@ def validate_data_schema(data_schema):
 
         # relation validation
         for relation in entity.relations:
+            print(entity_names)
+            print(relation.target)
 
             if relation.target not in entity_names:
                 errors.append({
@@ -37,6 +39,7 @@ def validate_data_schema(data_schema):
                     "entity": entity.name,
                     "message": f"Invalid relation target: {relation.target}"
                 })
+                
 
     return {
         "valid": len(errors) == 0,

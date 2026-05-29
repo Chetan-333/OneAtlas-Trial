@@ -46,7 +46,7 @@ def generate_response(prompt: str, stage_name: str):
         fallback_provider = model_config.get("fallback")
 
         if fallback_provider == "gemini":
-            llm = get_gemini_model("gemini-1.5-flash")
+            llm = get_gemini_model("gemini-2.5-flash")
             response = llm.invoke(prompt)
             return response.content
 

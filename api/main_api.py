@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pipeline.pipeline_engine import PipelineEngine
 from sse_starlette.sse import EventSourceResponse
 from runtime.event_stream import stream_job_events
+from repair.repair_engine import repair_engine
 
 from runtime.job_store import (
     create_job,
@@ -98,3 +99,45 @@ async def stream_generation(job_id: str):
         stream_job_events(job_id)
     )
 
+
+@app.post("/api/generate/{job_id}/repair")
+def repair_generation(job_id: str, payload: dict):
+
+    job = get_job(job_id)
+
+    if not job:
+        return {
+            "error": "Job not found"
+        }
+
+    error_type = payload.get("error_type", "structural")
+
+    result = job.get("result")
+
+    if not result:
+        return {
+            "error": "No result available for repair"
+        }
+
+    repair_result = repair_engine(
+        error_type=error_type,
+        data=result
+    )
+
+    job_repair_logs = job.get("repair_logs", [])
+    job_repair_logs.append(repair_result)
+
+    update_job(
+        job_id,
+        status="repair_attempted",
+        result=result,
+        errors=job.get("errors")
+    )
+
+    job["repair_logs"] = job_repair_logs
+
+    return {
+        "jobId": job_id,
+        "repair": repair_result,
+        "repair_logs": job_repair_logs
+    }

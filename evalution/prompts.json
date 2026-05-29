@@ -1,0 +1,25 @@
+[
+  "Build a CRM for a real estate agency. Agents manage leads, properties, and deals. Admin sees analytics. WhatsApp notifications when a deal closes.",
+
+  "Task manager for an engineering team. Tasks have due dates, assignees, priorities, and status. Team lead gets a Slack message when a task is overdue.",
+
+  "Inventory system for a warehouse. Products, stock movements, suppliers. Low stock triggers an email alert.",
+
+  "HR tool for a 50-person company. Track employees, leave requests, and performance reviews. Notify manager on Slack when leave is approved.",
+
+  "E-commerce backend. Products, orders, customers, payments via Stripe. Order confirmation sent via Gmail.",
+
+  "Event management platform. Organizers create events, attendees register, QR check-in at the door. Confirmation via WhatsApp.",
+
+  "Project tracker. Projects, milestones, tasks. Sync tasks to Jira. Update a Google Sheet with weekly progress.",
+
+  "An app.",
+
+  "Build something like Notion for doctors.",
+
+  "A platform with login, payments, roles, real-time chat, file uploads, native mobile, analytics, and a marketplace.",
+
+  "A CRM but also a project manager but also an invoicing tool.",
+
+  "Task manager, but make it smart."
+]
