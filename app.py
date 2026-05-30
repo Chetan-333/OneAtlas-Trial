@@ -1,302 +1,130 @@
-import streamlit as st
 import time
+import requests
+import streamlit as st
 
 
-from agents.intent_agent import extract_intent
-from agents.design_agent import generate_design
-from agents.repair_agent import repair_system
+API_URL = "https://oneatlas-trial.onrender.com"
 
-from agents.schema_agent import (
-    generate_database_schema,
-    generate_api_schema,
-    generate_ui_schema,
-    generate_auth_schema,
+
+st.set_page_config(
+    page_title="OneAtlas AppSpec Generator",
+    layout="wide"
 )
 
-from agents.validator_agent import validate_system
-from agents.runtime_agent import generate_application
+st.title("OneAtlas Trial — AppSpec Generator")
 
+st.caption(
+    "Natural language → AppIntent → DataSchema → AppSpec"
+)
 
-
-st.set_page_config(page_title="AI App Compiler", layout="wide")
-
-st.title("AI App Compiler")
-st.caption("Natural Language → Structured Config → Validation → Runtime App Generation")
-
-user_input = st.text_area(
-    "Describe your application",
+prompt = st.text_area(
+    "Describe the application you want to build",
     height=180,
-    placeholder="Example: Build a CRM with login, contacts, dashboard, role-based access, payments, and analytics."
+    placeholder="Build a CRM for a real estate agency. Agents manage leads, properties, and deals..."
 )
 
-demo_mode = st.checkbox("Demo Mode (use cached output, no API calls)")
+if st.button("Generate AppSpec", type="primary"):
 
-generate = st.button("Generate Application")
-
-# ---------------- DEMO MODE ----------------
-
-if demo_mode:
-    st.info("Demo Mode enabled — no API calls will be used.")
-
-    demo_intent = {
-        "app_name": "CRM",
-        "app_type": "SaaS Application",
-        "features": ["Login", "Contacts", "Dashboard", "Payments", "Analytics"],
-        "roles": ["Admin", "User"],
-        "entities": ["User", "Contact", "Payment", "Plan"],
-        "monetization": "Subscription",
-    }
-
-    demo_design = {
-        "pages": ["Login", "Dashboard", "Contacts", "Payments", "Analytics"],
-        "modules": ["Authentication", "Contact Management", "Payment Processing", "Analytics"],
-        "role_permissions": {
-            "Admin": {
-                "Dashboard": ["view", "edit"],
-                "Contacts": ["view", "create", "edit", "delete"],
-                "Analytics": ["view"],
-            },
-            "User": {
-                "Dashboard": ["view"],
-                "Contacts": ["view", "create"],
-                "Payments": ["view", "pay"],
-            },
-        },
-        "dashboards": [
-            {"name": "Admin Dashboard", "access_roles": ["Admin"]},
-            {"name": "User Dashboard", "access_roles": ["User"]},
-        ],
-    }
-
-    demo_db_schema = {
-        "tables": [
-            {
-                "table_name": "users",
-                "columns": [
-                    {"name": "id", "type": "integer"},
-                    {"name": "email", "type": "string"},
-                    {"name": "role", "type": "string"},
-                ],
-            },
-            {
-                "table_name": "contacts",
-                "columns": [
-                    {"name": "id", "type": "integer"},
-                    {"name": "name", "type": "string"},
-                    {"name": "email", "type": "string"},
-                ],
-            },
-        ]
-    }
-
-    demo_api_schema = {
-        "endpoints": [
-            {"path": "/users", "method": "GET", "description": "Fetch users"},
-            {"path": "/contacts", "method": "GET", "description": "Fetch contacts"},
-            {"path": "/payments", "method": "POST", "description": "Create payment"},
-        ]
-    }
-
-    demo_ui_schema = {
-        "pages": [
-            {"name": "Login", "components": ["Email Input", "Password Input", "Login Button"]},
-            {"name": "Dashboard", "components": ["Sidebar", "Stats Cards", "Analytics Chart"]},
-            {"name": "Contacts", "components": ["Contact Table", "Add Contact Button"]},
-        ]
-    }
-
-    demo_auth_schema = {
-        "roles": {
-            "Admin": ["manage_users", "view_analytics", "manage_contacts"],
-            "User": ["view_dashboard", "manage_own_contacts"],
-        }
-    }
-
-    demo_validation = {
-        "status": "success",
-        "issues": [],
-        "needs_repair": False,
-    }
-
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["Intent", "Design", "Schemas", "Validation", "Runtime"]
-    )
-
-    with tab1:
-        st.json(demo_intent)
-
-    with tab2:
-        st.json(demo_design)
-
-    with tab3:
-        st.subheader("Database Schema")
-        st.json(demo_db_schema)
-
-        st.subheader("API Schema")
-        st.json(demo_api_schema)
-
-        st.subheader("UI Schema")
-        st.json(demo_ui_schema)
-
-        st.subheader("Auth Schema")
-        st.json(demo_auth_schema)
-
-    with tab4:
-        st.json(demo_validation)
-
-    with tab5:
-        st.success("Demo app generated successfully.")
-        st.code("generated_apps/CRM/app.py")
-
-# ---------------- LIVE MODE ----------------
-
-
-assumptions = [
-    "Authentication enabled by default",
-    "REST API architecture assumed",
-    "Role-based access control enabled"
-]
-
-
-
-if generate:
-    start_time = time.time()
-
-    if not user_input.strip():
-        st.warning("Please enter a valid application description.")
+    if not prompt.strip():
+        st.warning("Please enter a prompt first.")
         st.stop()
 
-    if user_input.strip().lower() in ["hi", "hello", "hey", "test"]:
-        st.warning("Please describe an application, not just a greeting.")
-        st.stop()
-
-    try:
-        with st.spinner("Generating application..."):
-            intent = extract_intent(user_input)
-            design = generate_design(intent)
-
-            db_schema = generate_database_schema(intent, design)
-            api_schema = generate_api_schema(intent, design)
-            ui_schema = generate_ui_schema(intent, design)
-            auth_schema = generate_auth_schema(intent, design)
-
-            validation = validate_system(
-                db_schema,
-                api_schema,
-                ui_schema,
-                auth_schema,
-            )
-
-            repair_log = []
-
-            if validation["status"] == "failed":
-                repaired = repair_system(
-                    validation,
-                    intent,
-                    design,
-                    db_schema,
-                    api_schema,
-                    ui_schema,
-                    auth_schema
-                )
-
-                db_schema = repaired["db_schema"]
-                api_schema = repaired["api_schema"]
-                ui_schema = repaired["ui_schema"]
-                auth_schema = repaired["auth_schema"]
-                repair_log = repaired["repair_log"]
-
-                validation = validate_system(
-                    db_schema,
-                    api_schema,
-                    ui_schema,
-                    auth_schema,
-                )
-
-            generated = generate_application(
-                intent=intent,
-                app_name=intent.app_name.replace(" ", "_"),
-                db_schema=db_schema,
-                api_schema=api_schema,
-                ui_schema=ui_schema,
-                auth_schema=auth_schema,
-            )
-
-        st.success("Application generated successfully!")
-
-        
-        end_time = time.time()
-
-        latency = round(end_time - start_time, 2)
-
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(
-            ["Intent", "Design", "Schemas", "Validation", "Runtime"]
+    with st.spinner("Starting generation job..."):
+        response = requests.post(
+            f"{API_URL}/api/generate",
+            json={"prompt": prompt}
         )
 
-        with tab1:
-            
-            st.subheader("Extracted Intent")
-            st.json(intent.model_dump())
+    if response.status_code != 200:
+        st.error("Failed to start generation job.")
+        st.write(response.text)
+        st.stop()
 
-            st.subheader("System Assumptions")
-            st.json(assumptions)
+    job_data = response.json()
+    job_id = job_data.get("jobId")
 
-        with tab2:
-            st.json(design.model_dump())
+    st.success(f"Job created: {job_id}")
 
-        with tab3:
-            st.subheader("Database Schema")
-            st.json(db_schema.model_dump())
+    status_box = st.empty()
 
-            st.subheader("API Schema")
-            st.json(api_schema.model_dump())
+    while True:
+        job_response = requests.get(
+            f"{API_URL}/api/generate/{job_id}"
+        )
 
-            st.subheader("UI Schema")
-            st.json(ui_schema.model_dump())
+        if job_response.status_code != 200:
+            st.error("Failed to fetch job status.")
+            st.write(job_response.text)
+            break
 
-            st.subheader("Auth Schema")
-            st.json(auth_schema.model_dump())
+        job = job_response.json()
 
-        with tab4:
-            st.subheader("Validation Result")
-            st.json(validation)
+        status_box.info(f"Current Status: {job.get('status')}")
 
-            st.subheader("Repair Log")
-            st.json(repair_log)
+        if job.get("status") in ["completed", "failed", "repair_attempted"]:
+            break
 
-            if validation["status"] == "success":
-              st.success("Validation passed successfully!")
-            else:
-              st.error("Validation issues detected.")
+        time.sleep(2)
 
-        with tab5:
-            st.success(f"Generated app path: {generated['path']}")
+    st.divider()
 
-            run_command = f"streamlit run {generated['path']}/app.py"
-            st.info("To run the generated app locally, copy this command in terminal:")
-            st.code(run_command, language="bash")
+    col1, col2 = st.columns(2)
 
-            generated_app_file = f"{generated['path']}/app.py"
+    with col1:
+        st.subheader("Pipeline Events")
+        st.json(job.get("events", []))
 
-            try:
-                with open(generated_app_file, "r", encoding="utf-8") as file:
-                    app_code = file.read()
+    with col2:
+        st.subheader("Evaluation Logs")
+        result = job.get("result", {})
+        st.json(result.get("evaluation_logs", []))
 
-                st.subheader("Generated App Code Preview")
-                st.code(app_code, language="python")
+    st.divider()
 
-            except FileNotFoundError:
-                st.warning("Generated app.py file not found.")
+    if job.get("status") == "failed":
+        st.subheader("Errors")
+        st.json(job.get("errors"))
+        st.stop()
 
-    except Exception as e:
-                st.error(f"Error reading generated app file: {e}")
+    result = job.get("result", {})
 
-            
-                st.subheader("Execution Metrics")
-                st.json({
-                "latency_seconds": latency,
-                "repair_attempts": len(repair_log),
-                "validation_status": validation["status"]
-            })
+    st.subheader("Generated Output")
 
-       
+    tabs = st.tabs([
+        "AppIntent",
+        "DataSchema",
+        "AppSpec",
+        "Repair Logs",
+        "Raw Job"
+    ])
+
+    with tabs[0]:
+        st.json(result.get("intent", {}))
+
+    with tabs[1]:
+        st.json(result.get("data_schema", {}))
+
+    with tabs[2]:
+        st.json(result.get("appspec", {}))
+
+    with tabs[3]:
+        st.json(result.get("repair_logs", []))
+
+    with tabs[4]:
+        st.json(job)
+
+
+with st.sidebar:
+    st.header("Backend")
+
+    st.write(API_URL)
+
+    if st.button("Check Integrations"):
+        res = requests.get(f"{API_URL}/api/integrations")
+
+        if res.status_code == 200:
+            st.success("Integration registry loaded")
+            st.json(res.json())
+        else:
+            st.error("Failed to load integrations")
+            st.write(res.text)
