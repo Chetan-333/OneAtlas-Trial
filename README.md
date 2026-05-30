@@ -1,292 +1,365 @@
-# AI App Compiler
+# OneAtlas Trial — AI AppSpec Generation Pipeline
 
-An AI-powered multi-stage software generation system that converts natural language application requirements into structured schemas, validated configurations, and executable runtime applications.
+A multi-stage AI generation pipeline that converts a natural language app description into a validated, machine-readable application specification called **AppSpec**.
 
-This project was built as a systems-engineering-focused AI application compiler inspired by platforms like Base44.
+The system focuses on structured output generation, validation, repairability, provider routing, integration awareness, real-time progress tracking, and evaluation reliability.
 
 ---
 
-# Overview
+## Core Pipeline
 
-The system behaves like a compiler for software generation:
-
-Natural Language Prompt
-→ Intent Extraction
-→ System Design
-→ Schema Generation
+```text
+User Prompt
+→ AppIntent
+→ DataSchema
+→ AppSpec
 → Validation
-→ Repair Layer
-→ Runtime Generation
-→ Executable Application
+→ Repair-ready Output
+```
 
-Unlike single-prompt AI generators, this system uses a modular multi-stage pipeline with strict schema enforcement, validation, and targeted repair mechanisms.
+### Stage 1 — AppIntent
 
----
-
-# Features
-
-## Multi-Stage Generation Pipeline
-
-* Intent Extraction Agent
-* Design Agent
-* Schema Generation Layer
-* Validation Engine
-* Repair System
-* Runtime Generator
-
-## Structured Schema Generation
-
-The system generates:
-
-* UI Schema
-* API Schema
-* Database Schema
-* Authentication Schema
-
-## Validation + Repair Engine
-
-The system validates:
-
-* Missing fields
-* Invalid structures
-* Schema mismatches
-* API/Database inconsistencies
-* Logical issues
-
-If validation fails:
-
-* only the affected layer is regenerated
-* full pipeline reruns are avoided
-
-## Runtime Generation
-
-Generated schemas are converted into runnable Streamlit applications automatically.
-
-The system produces:
-
-* executable `app.py`
-* generated runtime UI
-* forms
-* tables
-* buttons
-* charts
-* game grids
-
-## Cached Execution Mode
-
-To reduce API costs and avoid free-tier quota exhaustion, the system supports a cached execution mode for reliable demonstrations and testing.
-
-## Evaluation Framework
+Extracts structured intent from a natural language prompt.
 
 Includes:
 
-* 10 normal product prompts
-* 10 edge-case prompts
-* evaluation metrics
-* repair tracking
-* latency tracking
+* appName
+* appType
+* features
+* entities
+* integrations_requested
+* assumptions
+* clarification handling
+
+### Stage 2 — DataSchema
+
+Generates database-ready entity schemas.
+
+Includes:
+
+* entities
+* table names
+* fields
+* relations
+* tenantId on every entity
+
+### Stage 3 — AppSpec
+
+Generates the final machine-readable application specification.
+
+Includes:
+
+* pages
+* API endpoints
+* auth rules
+* integration hooks
+* workflow stubs
 
 ---
 
-# Architecture
+## Features
 
-User Prompt
-↓
-Intent Agent
-↓
-Design Agent
-↓
-Schema Generation
-↓
-Validation Engine
-↓
-Repair Layer
-↓
-Runtime Generator
-↓
-Executable Streamlit App
+* Multi-stage AI generation pipeline
+* Typed schema contracts using Pydantic
+* Validation after each major stage
+* Repair engine architecture
+* Config-driven provider routing
+* Integration registry
+* Workflow stub generation
+* FastAPI backend
+* Job-based generation flow
+* SSE progress streaming
+* Evaluation logging
+* 12-prompt evaluation suite
 
 ---
 
-# Tech Stack
+## Tech Stack
 
 * Python
-* Streamlit
-* LangChain
-* Gemini API
+* FastAPI
 * Pydantic
-* LangGraph
-* JSON-based schema generation
+* LangChain
+* Groq
+* Gemini fallback support
+* SSE streaming
+* Uvicorn
 
 ---
 
-# Project Structure
+## Project Structure
 
-```bash
-project/
-│
-├── app.py
-├── main.py
-├── requirements.txt
-│
-├── agents/
-│   ├── intent_agent.py
-│   ├── design_agent.py
-│   ├── schema_agent.py
-│   ├── validator_agent.py
-│   ├── repair_agent.py
-│   └── runtime_agent.py
-│
-├── runtime/
-│   ├── generate_streamlit_app.py
-│   └── file_writer.py
-│
-├── evaluation/
-│   ├── test_prompts.json
-│   ├── results.json
-│   └── metrics.md
-│
-├── generated_apps/
-│
-└── README.md
+```text
+agents/          AI generation agents
+schemas/         Pydantic schema contracts
+validators/      Validation logic
+repair/          Repair strategies
+pipeline/        Pipeline orchestration
+gateway/         Provider routing
+integrations/    Integration registry
+runtime/         Job store, SSE, evaluation logging
+api/             FastAPI routes
+evaluation/      Test prompts and results
 ```
 
 ---
 
-# Running Locally
+## API Endpoints
 
-## 1. Clone Repository
+### Health Check
 
-```bash
-git clone <your_repo_url>
-cd app-compiler
+```http
+GET /
 ```
 
-## 2. Create Virtual Environment
+### Start Generation
+
+```http
+POST /api/generate
+```
+
+Request:
+
+```json
+{
+  "prompt": "Build a CRM for a real estate agency..."
+}
+```
+
+Response:
+
+```json
+{
+  "jobId": "uuid",
+  "status": "completed"
+}
+```
+
+### Get Job Status
+
+```http
+GET /api/generate/{job_id}
+```
+
+Returns:
+
+* job status
+* events
+* generated result
+* errors
+* repair logs
+* evaluation logs
+
+### Stream Progress
+
+```http
+GET /api/generate/{job_id}/stream
+```
+
+SSE endpoint for real-time pipeline progress.
+
+### Integration Registry
+
+```http
+GET /api/integrations
+```
+
+Returns supported integrations and actions.
+
+### Manual Repair
+
+```http
+POST /api/generate/{job_id}/repair
+```
+
+Triggers a repair pass on a generated job.
+
+---
+
+## Supported Integrations
+
+Implemented/stubbed integration registry:
+
+* Slack
+* Gmail
+* Stripe
+* WhatsApp
+* Webhook
+* Jira
+* Google Sheets
+
+Each integration includes:
+
+* id
+* display name
+* auth type
+* supported triggers
+* supported actions
+* input/output schema metadata
+
+---
+
+## Provider Routing
+
+Model selection is config-driven through `config/routing.json`.
+
+Different pipeline stages can route to different providers/models based on latency, cost, and capability needs.
+
+Example stages:
+
+* intent_extraction
+* schema_generation
+* appspec_generation
+* repair
+
+---
+
+## Evaluation Results
+
+The system was tested on 12 prompts:
+
+* 7 standard product prompts
+* 5 edge-case prompts
+
+Final result:
+
+```text
+Total Prompts: 12
+Passed: 12
+Failed: 0
+Success Rate: 100%
+```
+
+Major issue found during evaluation:
+
+* Invalid relation target validation
+
+Fix applied:
+
+* Two-pass entity validation
+* Integration registry expansion
+* AppSpec integration normalization
+
+---
+
+## Running Locally
+
+### 1. Clone Repository
+
+```bash
+git clone <repo-url>
+cd oneatlas-trial
+```
+
+### 2. Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate:
+### 3. Activate Environment
 
-### Windows
+Windows:
 
 ```bash
 venv\Scripts\activate
 ```
 
-### Linux/Mac
+Mac/Linux:
 
 ```bash
 source venv/bin/activate
 ```
 
-## 3. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 4. Add API Key
+### 5. Add Environment Variables
 
-Create `.env`
+Create `.env`:
 
 ```env
-GOOGLE_API_KEY=your_api_key_here
+GROQ_API_KEY=your_groq_api_key
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-## 5. Run Application
+### 6. Run API Server
 
 ```bash
-streamlit run app.py
+uvicorn api.main_api:app --reload
+```
+
+Open Swagger docs:
+
+```text
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
-# Runtime Execution
-
-Generated applications can be executed directly.
-
-Example:
+## Run Evaluation
 
 ```bash
-streamlit run generated_apps/CRM/app.py
+python evaluation/run_evaluation.py
+```
+
+Evaluation outputs are saved inside:
+
+```text
+evaluation/results/
 ```
 
 ---
 
-# Evaluation Metrics
+## Design Decisions
 
-## Metrics Tracked
+### Why Multi-Stage?
 
-* Validation Success Rate
-* Repair Attempts
-* Runtime Generation Success
-* Average Latency
-* Failure Types
+A single prompt is unreliable for complex software generation. This project separates generation into smaller typed stages so each output can be validated and repaired independently.
 
-## Example Results
+### Why AppSpec?
 
-```json
-{
-  "total_tests": 20,
-  "successful_generations": 17,
-  "validation_failures": 3,
-  "repair_attempts": 3,
-  "successful_repairs": 2,
-  "repair_success_rate": "66%",
-  "average_latency_seconds": 4.2,
-  "runtime_generation_success_rate": "85%"
-}
-```
+AppSpec acts as a machine-readable contract that a downstream code generator or template engine can consume.
+
+### Why Validation?
+
+LLMs can generate malformed or inconsistent structures. Validation ensures required fields, types, relations, integrations, and workflow references are correct before downstream usage.
+
+### Why Repair Engine?
+
+Instead of blindly retrying the whole pipeline, the repair engine is designed around targeted repair strategies:
+
+* structural repair
+* field repair
+* consistency repair
 
 ---
 
-# Failure Handling
+## Current Limitations
 
-The system handles:
-
-* vague prompts
-* incomplete prompts
-* conflicting requirements
-* schema mismatches
-* invalid outputs
-
-The repair layer regenerates only affected components instead of rerunning the entire pipeline.
+* Integration actions are metadata stubs, not live OAuth/API calls.
+* Repair endpoint is currently basic and can be improved with deeper stage-specific repair.
+* Frontend is intentionally minimal because the core evaluation focus is backend reliability and AppSpec generation.
+* Cost estimation can be expanded with more accurate token accounting.
 
 ---
 
-# Tradeoffs
+## Future Improvements
 
-## Quality vs Cost
-
-The system uses modular generation and cached execution mode to reduce API costs and improve stability.
-
-## Reliability vs Latency
-
-Validation and repair stages increase reliability while slightly increasing generation latency.
-
----
-
-# Future Improvements
-
-* Full React frontend generation
-* Dockerized deployment
-* Persistent memory/thread system
-* LangSmith tracing integration
-* Advanced schema repair
-* Multi-agent orchestration improvements
-* Production-grade backend generation
+* Next.js frontend dashboard
+* More advanced repair strategies
+* OpenRouter fallback
+* Token-level cost tracking
+* Persistent database-backed job store
+* Production deployment with authentication
+* More integration templates
+* Runtime/code generation from AppSpec
 
 ---
 
-# Live Demo
-
-https://app-compiler.streamlit.app/
-
----
-
-# Author
+## Author
 
 Chetan Mittal
