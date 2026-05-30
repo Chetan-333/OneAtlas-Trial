@@ -141,3 +141,10 @@ def repair_generation(job_id: str, payload: dict):
         "repair": repair_result,
         "repair_logs": job_repair_logs
     }
+from integrations.integration_registry import get_integration_registry
+
+@app.get("/api/integrations")
+def get_integrations():
+    return {
+        "integrations": get_integration_registry()
+    }
