@@ -2,9 +2,7 @@ from pipeline.pipeline_engine import PipelineEngine
 
 
 prompt = """
-Build a CRM for real estate agency with leads,
-deals, properties and WhatsApp notifications
-when deal closes.
+Project tracker. Projects, milestones, tasks. Sync tasks to Jira. Update a Google Sheet with weekly progress.
 """
 
 

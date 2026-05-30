@@ -99,8 +99,13 @@ STRICT RULES:
 - integrationHooks MUST use keys: integration, trigger, action.
 - workflowStubs trigger MUST be an object with entity, event, condition.
 - workflowStubs MUST include integration, action, payload.
-- Valid integration IDs: slack, gmail, stripe, whatsapp, webhook.
-- Valid actions:
+- Valid integration IDs:
+slack, gmail, stripe, whatsapp, webhook, jira, google_sheets
+
+Valid actions:
+jira -> create_issue
+google_sheets -> append_row
+
   slack -> send_channel_message
   gmail -> send_email
   stripe -> create_customer
@@ -113,6 +118,7 @@ STRICT RULES:
 - Do not use permissions as string arrays.
 - Do not include explanations.
 - Do not include markdown.
+If user says "Google Sheet" or "Google Sheets", use integration ID "google_sheets".
 """
 
     response = generate_response(

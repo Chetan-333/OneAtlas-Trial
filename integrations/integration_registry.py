@@ -96,9 +96,48 @@ INTEGRATION_REGISTRY = [
                 }
             }
         ]
-    }
-]
+    },
 
+{
+    "id": "jira",
+    "displayName": "Jira",
+    "authType": "oauth2",
+    "triggers": ["record_created", "record_updated", "status_changed"],
+    "actions": [
+        {
+            "id": "create_issue",
+            "description": "Create Jira issue",
+            "inputSchema": {
+                "projectKey": "string",
+                "summary": "string",
+                "description": "string"
+            },
+            "outputSchema": {
+                "issueId": "string"
+            }
+        }
+    ]
+},
+{
+    "id": "google_sheets",
+    "displayName": "Google Sheets",
+    "authType": "oauth2",
+    "triggers": ["record_created", "record_updated", "status_changed"],
+    "actions": [
+        {
+            "id": "append_row",
+            "description": "Append row to Google Sheet",
+            "inputSchema": {
+                "sheetId": "string",
+                "row": "object"
+            },
+            "outputSchema": {
+                "rowId": "string"
+            }
+        }
+    ]
+}
+]
 
 def get_integration_registry():
     return INTEGRATION_REGISTRY

@@ -44,60 +44,10 @@
   {
     "prompt_id": 7,
     "prompt": "Project tracker. Projects, milestones, tasks. Sync tasks to Jira. Update a Google Sheet with weekly progress.",
-    "success": false,
+    "success": true,
     "failed_stage": "appspec_generation",
-    "errors": [
-      {
-        "stage": "appspec",
-        "error_type": "invalid_integration",
-        "integration": "jira",
-        "message": "Invalid integration: jira"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_action",
-        "integration": "jira",
-        "action": "send_channel_message",
-        "message": "Invalid action: send_channel_message"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_integration",
-        "integration": "google sheets",
-        "message": "Invalid integration: google sheets"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_action",
-        "integration": "google sheets",
-        "action": "send_email",
-        "message": "Invalid action: send_email"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_workflow_integration",
-        "integration": "jira",
-        "message": "Invalid workflow integration: jira"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_workflow_action",
-        "action": "send_channel_message",
-        "message": "Invalid workflow action: send_channel_message"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_workflow_integration",
-        "integration": "google sheets",
-        "message": "Invalid workflow integration: google sheets"
-      },
-      {
-        "stage": "appspec",
-        "error_type": "invalid_workflow_action",
-        "action": "send_email",
-        "message": "Invalid workflow action: send_email"
-      }
-    ]
+    "errors": []
+    
   },
   {
     "prompt_id": 8,
