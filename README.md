@@ -5,7 +5,13 @@ A multi-stage AI generation pipeline that converts a natural language app descri
 The system focuses on structured output generation, validation, repairability, provider routing, integration awareness, real-time progress tracking, and evaluation reliability.
 
 ---
+Frontend:
+https://oneatlas-trial-aqd39zfii8scfmjm9em8ac.streamlit.app
 
+Backend:
+https://oneatlas-trial.onrender.com
+
+---
 ## Core Pipeline
 
 ```text
