@@ -1,0 +1,137 @@
+[
+  {
+    "prompt_id": 1,
+    "prompt": "Build a CRM for a real estate agency. Agents manage leads, properties, and deals. Admin sees analytics. WhatsApp notifications when a deal closes.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 2,
+    "prompt": "Task manager for an engineering team. Tasks have due dates, assignees, priorities, and status. Team lead gets a Slack message when a task is overdue.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 3,
+    "prompt": "Inventory system for a warehouse. Products, stock movements, suppliers. Low stock triggers an email alert.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 4,
+    "prompt": "HR tool for a 50-person company. Track employees, leave requests, and performance reviews. Notify manager on Slack when leave is approved.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 5,
+    "prompt": "E-commerce backend. Products, orders, customers, payments via Stripe. Order confirmation sent via Gmail.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 6,
+    "prompt": "Event management platform. Organizers create events, attendees register, QR check-in at the door. Confirmation via WhatsApp.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 7,
+    "prompt": "Project tracker. Projects, milestones, tasks. Sync tasks to Jira. Update a Google Sheet with weekly progress.",
+    "success": false,
+    "failed_stage": "appspec_generation",
+    "errors": [
+      {
+        "stage": "appspec",
+        "error_type": "invalid_integration",
+        "integration": "jira",
+        "message": "Invalid integration: jira"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_action",
+        "integration": "jira",
+        "action": "send_channel_message",
+        "message": "Invalid action: send_channel_message"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_integration",
+        "integration": "google sheets",
+        "message": "Invalid integration: google sheets"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_action",
+        "integration": "google sheets",
+        "action": "send_email",
+        "message": "Invalid action: send_email"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_workflow_integration",
+        "integration": "jira",
+        "message": "Invalid workflow integration: jira"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_workflow_action",
+        "action": "send_channel_message",
+        "message": "Invalid workflow action: send_channel_message"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_workflow_integration",
+        "integration": "google sheets",
+        "message": "Invalid workflow integration: google sheets"
+      },
+      {
+        "stage": "appspec",
+        "error_type": "invalid_workflow_action",
+        "action": "send_email",
+        "message": "Invalid workflow action: send_email"
+      }
+    ]
+  },
+  {
+    "prompt_id": 8,
+    "prompt": "An app.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 9,
+    "prompt": "Build something like Notion for doctors.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 10,
+    "prompt": "A platform with login, payments, roles, real-time chat, file uploads, native mobile, analytics, and a marketplace.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 11,
+    "prompt": "A CRM but also a project manager but also an invoicing tool.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  },
+  {
+    "prompt_id": 12,
+    "prompt": "Task manager, but make it smart.",
+    "success": true,
+    "failed_stage": null,
+    "errors": []
+  }
+]
