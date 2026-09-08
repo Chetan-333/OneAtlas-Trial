@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pipeline.pipeline_engine import PipelineEngine
 from sse_starlette.sse import EventSourceResponse
 from runtime.event_stream import stream_job_events
@@ -11,6 +12,14 @@ from runtime.job_store import (
 )
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def create_event_callback(job_id):
