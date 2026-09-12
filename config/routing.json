@@ -2,21 +2,21 @@
   "intent_extraction": {
     "primary": "groq",
     "fallback": "gemini",
-    "model": "llama-3.3-70b-versatile"
+    "model": "openai/gpt-oss-120b"
   },
   "schema_generation": {
     "primary": "groq",
     "fallback": "gemini",
-    "model": "llama-3.3-70b-versatile"
+    "model": "openai/gpt-oss-120b"
   },
   "appspec_generation": {
     "primary": "groq",
     "fallback": "gemini",
-    "model": "llama-3.3-70b-versatile"
+    "model": "openai/gpt-oss-120b"
   },
   "repair": {
     "primary": "groq",
     "fallback": "gemini",
-    "model": "llama-3.3-70b-versatile"
+    "model": "openai/gpt-oss-120b"
   }
 }
